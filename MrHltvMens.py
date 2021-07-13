@@ -32,16 +32,20 @@ class MrHltvMens:
 
         return soup
 
-    def get_thread_main_text(self, soup, debug=False):
+    def get_thread_main_text(self, soup, debug=False, comment=False):
+        
+        if not comment:
+            data = soup.find_all(class_="forum-topbar")[0]
+            topic = data.find(class_="topic").text
+            reformatted_topic = topic.replace('\n', '')
 
-        data = soup.find_all(class_="forum-topbar")[0]
+            if debug:
+                print('Topic:', reformatted_topic)
 
-        topic = data.find(class_="topic")
+        if comment:
+            data = soup        
 
-        if debug:
-            print('Topic:', topic)
-
-        author = data.find(class_="authorAnchor")
+        author = data.find(class_="authorAnchor").text.strip()
 
         if debug:
             print('Author:', author)
@@ -58,60 +62,70 @@ class MrHltvMens:
             if flair:
                 flair = flair['title']
 
-        if not flair:
+        if flair:
+            flair = flair.replace("fan of ", "")
+        else:
             flair = 'None'
 
         if debug:
             print('Flair:', flair)
 
-        flag = data.find(class_="flag")
+        flag = data.find(class_="flag")['title']
         
         if debug:
             print('Flag:', flag)
 
-        text = soup.find_all(class_="forum-middle")[0]
+        text = soup.find_all(class_="forum-middle")[0].text.strip()
+        reformatted_text = "\\n".join(text.splitlines())
 
         if debug:
-            print('Text:', text)
+            print('???????:', reformatted_text)
+            
 
-        result_dict = {
-            "topic" : topic.text,
-            "author" : author.text.strip(),
-            "flair" : flair,
-            "flag" : flag['title'],
-            "text" : text.text
-        }
+        date = soup.find(class_="forum-bottombar").text.strip()
+
+        if debug:
+            print('Date:', date)
+
+        if not comment:
+
+            result_dict = {
+                "topic" : reformatted_topic,
+                "date" : date, 
+                "author" : author,
+                "flair" : flair,
+                "flag" : flag,
+                "text" : reformatted_text
+            }
+
+        else:
+
+            result_dict = {
+                "date" : date,
+                "author" : author,
+                "flair" : flair,
+                "flag" : flag,
+                "text" : reformatted_text
+            }
+
 
         return result_dict
 
-    def get_thread_comments(self, soup):
-        return 'test'
+    def get_thread_comments(self, soup, debug=False): 
+
+        comments = []
+        comments_soup = soup.find_all(class_="post")
+
+        if debug:
+            print('Comments in soup:', comments_soup)
+
+        for comment_soup in comments_soup:
+            if debug:
+                print('Sending comment to self.get_thread_main_text:', comment_soup)
+            comment = self.get_thread_main_text(comment_soup, comment=True)
+            comments.append(comment)
+            
+        return comments
 
 
 #url = "https://www.hltv.org/forums/threads/2488634/your-16-personality-type#r50236990"
-
-
-
-#comments = soup.find_all("div", {"class": "post"})
-
-#for comment in comments:
-    #print(len(comment))
-    #if comment and '>' in comment:
-        #post_info = comment.split('>')
-
-        #print(post_info)
-        #print(comment)
-        #print('------------')
-        #input()
-
-#collect_string = False
-
-'''
-for strip in strips:
-    if '#' in strip and not collect_string:
-        collect_string = True
-
-    elif collect_string:
-        print(strip)
-        collect_string = False
-        '''
