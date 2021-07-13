@@ -12,7 +12,8 @@ from bs4 import BeautifulSoup
 class MrHltvMens:
 
     def __init__(self):
-        self.user_agent = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'}
+        self.user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'}
+        self.referer = "https://www.google.com/"
         self.url = "https://www.hltv.org/"
 
     def set_url(self, url):
@@ -23,6 +24,8 @@ class MrHltvMens:
 	    self.url,
 	    data=None,
 	    headers=self.user_agent)
+
+        req.add_header('Referer', self.referer)
 
         html = urllib.request.urlopen(req)
         soup = BeautifulSoup(html, 'html.parser')
