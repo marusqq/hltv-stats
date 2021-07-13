@@ -71,7 +71,4 @@ while True:
                 time_off = util.get_random_int(900, 3600)
                 print(fgCyan + 'Taking a break for ' + str(time_off) + ' seconds (~' + str(round(time_off/60)) + ' minutes)' )
                 time.sleep(time_off)
-                
-
-        quit()
         
