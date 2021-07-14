@@ -1,3 +1,4 @@
 tests/
 threads/
+log.txt
 __pycache__/

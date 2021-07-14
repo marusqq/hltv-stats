@@ -31,17 +31,18 @@ random_request_breaks = True
 random_request_break_chance = 0.4
 
 # thread_counter = 1
-# need to recalculate 404s and 500s to 143
-thread_counter = 143
+# need to recalculate 404s and 500s to 145
+thread_counter = 145
 
 thread_404_count = 0
 thread_500_count = 0
 thread_success_count = 0
 
-log_file = open(dir_to_save + 'log.txt', 'w')
-
 
 while True:
+    
+    log_file = open(os.getcwd() + '/log.txt', 'a')
+
     new_url = "https://www.hltv.org/forums/threads/" + str(thread_counter) + "/thread"
     #new_url = "https://www.hltv.org/forums/threads/1/your-16-personality-type"
     hltv_parser.set_url(new_url)
@@ -103,4 +104,6 @@ while True:
                 
 
 
-                time.sleep(time_off)        
+                time.sleep(time_off)       
+
+        log_file.close()
