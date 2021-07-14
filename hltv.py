@@ -31,11 +31,14 @@ random_request_breaks = True
 random_request_break_chance = 0.4
 
 # thread_counter = 1
-thread_counter = 2488636
+# need to recalculate 404s and 500s to 143
+thread_counter = 143
 
 thread_404_count = 0
 thread_500_count = 0
-thread_success_count = 0 
+thread_success_count = 0
+
+log_file = open(dir_to_save + 'log.txt', 'w')
 
 
 while True:
@@ -44,8 +47,8 @@ while True:
     hltv_parser.set_url(new_url)
 
     try:
-        print(fgWhite + '\n---------------------------')
-        print(fgWhite + "Trying url:", new_url, end="\t")
+        util.logging(out_file=log_file, color=fgWhite, text='\n---------------------------')
+        util.logging(out_file=log_file, color=fgWhite, text="Trying url:" + str(new_url) + "\t")
         page_data = hltv_parser.get_page_data()
 
         thread_info = hltv_parser.get_thread_main_text(page_data, debug=False)
@@ -60,22 +63,13 @@ while True:
         util.write_to_file(thread_info, output_file, type='thread')
         util.write_to_file(comments, output_file, type='comments')
         
-
-
-        # w = csv.writer(open(dir_to_save + "thread_" + str(thread_counter) + ".csv", "w"))
-        # for key, val in thread_info.items():
-        #     w.writerow([key, val])
-        
-        # for comment in comments:
-        #     for key, val in comment.items():
-        #         w.writerow([key, val])
-        
         thread_success_count = thread_success_count + 1
-        print(fgGreen + 'Success!')
+        util.logging(out_file=log_file, color=fgGreen, text='Success!')
 
     except Exception as e:
-        print(fgRed + 'Failed!')
-        print(fgRed + 'Reason:', e)
+        util.logging(out_file=log_file, color=fgRed, text='Failed!')
+        util.logging(out_file=log_file, color=fgRed, text='Reason:' + str(e))
+
         if '404' in str(e):
             thread_404_count = thread_404_count + 1
         elif '500' in str(e):
@@ -97,12 +91,16 @@ while True:
         if random_request_breaks:
             if (random_request_break_chance * 100) > util.get_random_int(1,100):
                 time_off = util.get_random_int(90, 1800)
-                print(fgCyan + 'Taking a break for ' + str(time_off) + ' seconds (~' + str(round(time_off/60)) + ' minutes)' )
-                print(fgWhite + '----------------------------------')
-                print(fgWhite + 'Current thread count:')
-                print(fgGreen + 'Succesful thread count: ' + str(thread_success_count))
-                print(fgRed + '500 thread count: ' + str(thread_500_count))
-                print(fgRed + '404 thread count: ' + str(thread_404_count))
-                print(fgWhite + '----------------------------------')
+                
+                util.logging(out_file=log_file, color=fgCyan, text='Taking a break for ' + str(time_off) + ' seconds (~' + str(round(time_off/60)) + ' minutes)')
+                util.logging(out_file=log_file, color=fgWhite, text='----------------------------------')
+
+                util.logging(out_file=log_file, color=fgWhite, text='Current thread count:')
+                util.logging(out_file=log_file, color=fgGreen, text='Succesful thread count: ' + str(thread_success_count))
+                util.logging(out_file=log_file, color=fgRed, text='500 thread count: ' + str(thread_500_count))
+                util.logging(out_file=log_file, color=fgRed, text='404 thread count: ' + str(thread_404_count))
+                util.logging(out_file=log_file, color=fgWhite, text='----------------------------------')
+                
+
 
                 time.sleep(time_off)        
